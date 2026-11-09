@@ -1,0 +1,7 @@
+*.backup
+*.rif
+*.key
+*.conf
+export*.rsc
+!examples/*.example
+.env

@@ -1,0 +1,22 @@
+# Sanitised example, not a real export. All addresses, MACs and names are examples.
+/interface bridge add name=bridge-lan
+/interface bridge port add bridge=bridge-lan interface=ether2
+/interface bridge port add bridge=bridge-lan interface=ether3
+/interface bridge port add bridge=bridge-lan interface=ether4
+/ip address add address=192.168.88.1/24 interface=bridge-lan
+/ip pool add name=dhcp-pool ranges=192.168.88.10-192.168.88.254
+/ip dhcp-server add name=dhcp1 interface=bridge-lan address-pool=dhcp-pool lease-time=1d
+/ip dhcp-server network add address=192.168.88.0/24 gateway=192.168.88.1 dns-server=192.168.88.1
+/ip dns set allow-remote-requests=yes servers=1.1.1.3,1.0.0.3
+/ip hotspot profile add name=hsprof1 hotspot-address=192.168.88.1 dns-name=login.wifi login-by=http-chap
+/ip hotspot add name=hotspot1 interface=bridge-lan address-pool=dhcp-pool profile=hsprof1
+/ip hotspot ip-binding add mac-address=AA:BB:CC:00:00:01 type=bypassed comment="Company PC - DESKTOP-EXAMPLE1"
+/ip firewall filter add chain=input action=accept connection-state=established,related
+/ip firewall filter add chain=input action=drop connection-state=invalid
+/ip firewall filter add chain=input action=accept protocol=udp dst-port=51820
+/ip firewall filter add chain=input action=drop in-interface=ether5
+/ip firewall filter add chain=input action=drop in-interface=ether1
+/ip firewall nat add chain=srcnat action=masquerade out-interface=ether1
+/ip firewall nat add chain=srcnat action=masquerade out-interface=ether5
+/ip route add dst-address=0.0.0.0/0 gateway=192.168.1.1 distance=1 check-gateway=ping
+/ip route add dst-address=0.0.0.0/0 gateway=192.168.86.1 distance=2 check-gateway=ping
